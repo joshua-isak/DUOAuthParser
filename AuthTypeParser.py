@@ -36,7 +36,7 @@ def output_userdata(scr, users, log_total, userdata):
 
 
 def output_specific_userdata(scr, users, log_total, userdata, specific_user_num):
-    scr.addstr(32, 0, "AuthTypes per User:")
+    scr.addstr(32, 0, "AuthTypes per User Subset:")
 
     base_coord = 33
 
