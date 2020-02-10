@@ -15,7 +15,7 @@ def output_progress(scr, log_num, log_total, users, factors):
     for z in factors:
         scr.addstr(base_coord, 0, "  " + z + ": ")                          # Factor Type Name
         scr.addstr(base_coord, 23, str(factors.get(z)) )                    # Number appearances
-        scr.addstr(base_coord, 34, str( round((factors.get(z) / log_num)*100, 2) ) + " %" )    # Percent of Total
+        scr.addstr(base_coord, 34, str( round((factors.get(z) / log_num)*100, 2) ) + " %   " )    # Percent of Total
         base_coord += 1
 
     scr.refresh()
@@ -29,11 +29,24 @@ def output_userdata(scr, users, log_total, userdata):
     for z in userdata:
         scr.addstr(base_coord, 0, "  " + z + ": ")                          # Factor Type Name
         scr.addstr(base_coord, 23, str(userdata.get(z)) )                    # Number appearances
-        scr.addstr(base_coord, 34, str( round((userdata.get(z) / len(users))*100, 2) ) + " %" )    # Percent of Total
+        scr.addstr(base_coord, 34, str( round((userdata.get(z) / len(users))*100, 2) ) + " %   " )    # Percent of Total
         base_coord += 1
 
     scr.refresh()
 
+
+def output_specific_userdata(scr, users, log_total, userdata, specific_user_num):
+    scr.addstr(32, 0, "AuthTypes per User:")
+
+    base_coord = 33
+
+    for z in userdata:
+        scr.addstr(base_coord, 0, "  " + z + ": ")                          # Factor Type Name
+        scr.addstr(base_coord, 23, str(userdata.get(z)) )                    # Number appearances
+        scr.addstr(base_coord, 34, str( round((userdata.get(z) / specific_user_num)*100, 2) ) + " %   " )    # Percent of Total
+        base_coord += 1
+
+    scr.refresh()
 
 
 def write_results():
@@ -44,7 +57,7 @@ def write_results():
 def main(scr):
     # Init curses output
     scr.clear()
-    scr.addstr(0, 0, "DUO AuthType Parser v0.2")    # Version Info
+    scr.addstr(0, 0, "DUO AuthType Parser v0.3")    # Version Info
     scr.addstr(3, 0, "")                            # Current Program Status
     scr.refresh()
 
@@ -56,9 +69,20 @@ def main(scr):
     f = open("data.json", "r")
     raw_data = json.load(f)
     data = raw_data["data"]
+    f.close()
 
 
-    # Parse the file
+    # Read the specific users file to be parsed
+    scr.addstr(3, 0, "Reading Users file...")
+    scr.refresh()
+
+    f = open("users.txt", "r")
+    raw_userlist = f.readlines()
+    userlist = [x.strip() for x in raw_userlist]  # strip irrelevant characters
+    f.close()
+
+
+    # Parse the JSON logfile
     scr.addstr(3, 0, "Parsing logs...          ")
     scr.refresh()
 
@@ -105,6 +129,25 @@ def main(scr):
         output_userdata(scr, users, log_total, userdata)
 
 
+    # Analyze data given a specific list of users
+    scr.addstr(3, 0, "Analyzing Specific User Data...       ")
+    scr.refresh()
+
+    specific_userdata = {}
+    specific_user_num = 0
+
+    for y in users:
+
+        if y in userlist:
+            specific_user_num += 1
+            auth = users[y]
+
+            if auth not in specific_userdata:
+                specific_userdata[auth] = 1
+            else:
+                specific_userdata[auth] += 1
+
+            output_specific_userdata(scr, userlist, log_total, specific_userdata, specific_user_num)
 
 
 
