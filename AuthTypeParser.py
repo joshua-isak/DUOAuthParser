@@ -156,7 +156,7 @@ def main(scr):
     scr.addstr(3, 0, "Done!        Press ctrl + C to exit")
     scr.refresh()
     while True:
-        pass
+        time.sleep(100)
 
 
 
